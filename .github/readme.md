@@ -1,4 +1,4 @@
-# A11Y Report Viewer
+# A11Y CI
 
 The CI tool allows you to run automated accessibility tests against a specified url. It will run silently until crawling is complete unless you specify it to do another function on top of the crawling, for example, you can ask the crawler to write the results to a file on completion
 
