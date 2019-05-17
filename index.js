@@ -8,22 +8,22 @@ const { urlRegex } = require("./helpers/regexes");
 program
   .version("0.1.0", "-v, --version")
   .option(
-    "-o, --output [path/to/output/directory]",
+    "-o, --output <path/to/output/directory>",
     "Output folder path",
     "results/"
   )
   .option(
-    "-l, --limit [page count]",
+    "-l, --limit <page count>",
     "Limit the amount of pages crawled",
     1000000
   )
   .option(
-    "-f, --filename [filename]",
+    "-f, --filename <filename>",
     "The name of the output file",
     "report.json"
   )
   .option(
-      "-n, --num-retries [retries]",
+      "-n, --num-retries <retries>",
       "How often the connection should be retried before failing",
       5
   )
@@ -32,13 +32,13 @@ program
       "Skip links that only change the url fragment of a page?"
   )
   .option(
-      "--ignore-extensions [extensions]",
+      "--ignore-extensions <extensions>",
       "Comma separated list of extensions to ignore (skipping pages)",
       s => s.split(","),
       []
   )
   .option(
-      "--route-manifest [path]",
+      "--route-manifest <path>",
       "A path to a route manifest file, used to de-duplicate visited pages and routes"
   )
   .option(
