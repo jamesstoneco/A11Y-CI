@@ -22,7 +22,30 @@ program
     "The name of the output file",
     "report.json"
   )
-  .option("-s, --site [url]", "The base URL of the site to crawl")
+  .option(
+      "-n, --num-retries [retries]",
+      "How often the connection should be retried before failing",
+      5
+  )
+  .option(
+      "--ignore-fragment-links",
+      "Skip links that only change the url fragment of a page?"
+  )
+  .option(
+      "--ignore-extensions [extensions]",
+      "Comma separated list of extensions to ignore (skipping pages)",
+      s => s.split(","),
+      []
+  )
+  .option(
+      "--route-manifest [path]",
+      "A path to a route manifest file, used to de-duplicate visited pages and routes"
+  )
+  .option(
+      "--streaming",
+      `Whether to expose the streaming logging API, used for advanced, "live" reporters`
+  )
+  .option("-s, --site <url>", "The base URL of the site to crawl")
   .parse(process.argv);
 
 const {
@@ -30,7 +53,12 @@ const {
   output: outputFilePath,
   limit: pageLimit,
   filename: outputFileName,
-  site
+  numRetries: maxRetries,
+  routeManifest: routeManifestPath,
+  site,
+  streaming,
+  ignoreExtensions,
+  ignoreFragmentLinks
 } = program;
 
 if (!site) {
@@ -42,8 +70,16 @@ if (!site) {
 if (!urlRegex.test(site)) throw new Error("Invalid URL provided");
 
 const crawlerConfig = {
-  pageLimit
+  pageLimit,
+  maxRetries,
+  ignoreFragmentLinks,
+  ignoreExtensions,
+  routeManifestPath,
+  streaming
 };
+
+console.log(JSON.stringify(crawlerConfig, null, 2));
+process.exit(0);
 
 (async function runProgram() {
   const results = await runCrawler(site, crawlerConfig);
