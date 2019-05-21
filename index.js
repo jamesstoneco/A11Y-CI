@@ -78,9 +78,6 @@ const crawlerConfig = {
   streaming
 };
 
-console.log(JSON.stringify(crawlerConfig, null, 2));
-process.exit(0);
-
 (async function runProgram() {
   const results = await runCrawler(site, crawlerConfig);
 
