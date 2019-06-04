@@ -8,15 +8,15 @@ describe("should parse options correctly", () => {
     const argv = [
       process.argv[0],
       process.argv[1],
-      "-s",
+      "--site",
       "https://foo.bar",
-      "-o",
+      "--output",
       "test/",
-      "-l",
+      "--limit",
       "5",
-      "-f",
+      "--filename",
       "res.json",
-      "-n",
+      "--num-retries",
       "1",
       "--ignore-fragment-links",
       "--ignore-extensions",
@@ -40,13 +40,18 @@ describe("should parse options correctly", () => {
       }
     };
 
-    const actual = parseArguments(argv);
+    const actual = parseArguments(argv, require("commander"));
 
-    assert.deepStrictEqual(actual, expected);
+    assert.deepEqual(actual, expected);
   });
 
   it("parses with default values", () => {
-    const argv = [process.argv[0], process.argv[1], "-s", "https://foo.bar"];
+    const argv = [
+      process.argv[0],
+      process.argv[1],
+      "--site",
+      "https://foo.bar"
+    ];
 
     const expected = {
       site: "https://foo.bar",
@@ -54,12 +59,16 @@ describe("should parse options correctly", () => {
       outputFileName: "report.json",
       crawlerConfig: {
         pageLimit: 1000000,
-        maxRetries: 5
+        maxRetries: 5,
+        ignoreFragmentLinks: undefined,
+        ignoreExtensions: undefined,
+        routeManifestPath: undefined,
+        streaming: undefined
       }
     };
 
-    const actual = parseArguments(argv);
+    const actual = parseArguments(argv, require("commander"));
 
-    assert.deepStrictEqual(actual, expected);
+    assert.deepEqual(actual, expected);
   });
 });

@@ -46,59 +46,55 @@ function parseArguments(argv) {
     .option("-s, --site <url>", "The base URL of the site to crawl")
     .parse(argv);
 
-  if (!program.site) {
+  const {
+    site,
+    output,
+    filename,
+    limit,
+    numRetries,
+    ignoreFragmentLinks,
+    ignoreExtensions,
+    routeManifest,
+    streaming
+  } = program;
+
+  if (!site) {
     throw new Error(
       `The -s or --site flag is required alongside a valid URL path for the crawler to crawl`
     );
   }
 
-  if (!urlRegex.test(program.site)) throw new Error("Invalid URL provided");
+  if (!urlRegex.test(site)) throw new Error("Invalid URL provided");
 
-  const result = removeFalsy({
-    outputFilePath: program.output,
-    site: program.site,
-    outputFileName: program.filename,
+  const result = {
+    outputFilePath: output,
+    site,
+    outputFileName: filename,
     crawlerConfig: {
-      pageLimit: toInt(program.limit),
-      maxRetries: toInt(program.numRetries),
-      ignoreFragmentLinks: program.ignoreFragmentLinks,
-      ignoreExtensions: program.ignoreExtensions,
-      routeManifestPath: program.routeManifest,
-      streaming: program.streaming
+      pageLimit: program.limit,
+      maxRetries: program.numRetries,
+      ignoreFragmentLinks,
+      ignoreExtensions,
+      routeManifestPath: routeManifest,
+      streaming
     }
-  });
+  };
 
-  // Because the mutating API of commander is causing problems in the tests
-  delete program.output;
-  delete program.site;
-  delete program.filename;
-  delete program.limit;
-  delete program.numRetries;
-  delete program.ignoreFragmentLinks;
-  delete program.ignoreExtensions;
-  delete program.routeManifest;
-  delete program.streaming;
+  for (const key of [
+    "site",
+    "output",
+    "filename",
+    "limit",
+    "numRetries",
+    "ignoreFragmentLinks",
+    "ignoreExtensions",
+    "routeManifest",
+    "streaming"
+  ]) {
+    delete program[key];
+  }
 
   return result;
-}
-
-function toInt(x) {
-  return x ? parseInt(x) : x;
-}
-
-function removeFalsy(obj) {
-  return Object.keys(obj)
-    .filter(k => obj[k])
-    .reduce(
-      (o, k) => ({
-        ...o,
-        [k]:
-          typeof obj[k] === "object" && !Array.isArray(obj[k])
-            ? removeFalsy(obj[k])
-            : obj[k]
-      }),
-      {}
-    );
 }
 
 async function runProgram() {
@@ -110,7 +106,7 @@ async function runProgram() {
   } = parseArguments(process.argv);
   const results = await runCrawler(site, crawlerConfig);
 
-  if (outputFilePath) {
+  if (outputFilePath && outputFileName) {
     handleOutput(JSON.stringify(results), outputFilePath, outputFileName);
   }
 }
