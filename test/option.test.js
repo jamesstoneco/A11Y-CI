@@ -1,30 +1,15 @@
-const assert = require("assert");
 const { parseArguments } = require("../app");
+const {
+  program,
+  allOptions,
+  siteOnlyOptions
+} = require("./__fixtures__/options");
 
 jest.mock("accessible-pipeline", () => ({ runCore: jest.fn() }));
 
 describe("should parse options correctly", () => {
   it("parses some options", () => {
-    const argv = [
-      process.argv[0],
-      process.argv[1],
-      "--site",
-      "https://foo.bar",
-      "--output",
-      "test/",
-      "--limit",
-      "5",
-      "--filename",
-      "res.json",
-      "--num-retries",
-      "1",
-      "--ignore-fragment-links",
-      "--ignore-extensions",
-      "foo,bar",
-      "--route-manifest",
-      "mani.json",
-      "--streaming"
-    ];
+    const argv = [...program, ...allOptions];
 
     const expected = {
       site: "https://foo.bar",
@@ -40,18 +25,13 @@ describe("should parse options correctly", () => {
       }
     };
 
-    const actual = parseArguments(argv, require("commander"));
+    const actual = parseArguments(argv);
 
-    assert.deepEqual(actual, expected);
+    expect(actual).toEqual(expected);
   });
 
   it("parses with default values", () => {
-    const argv = [
-      process.argv[0],
-      process.argv[1],
-      "--site",
-      "https://foo.bar"
-    ];
+    const argv = [...program, ...siteOnlyOptions];
 
     const expected = {
       site: "https://foo.bar",
@@ -67,8 +47,8 @@ describe("should parse options correctly", () => {
       }
     };
 
-    const actual = parseArguments(argv, require("commander"));
+    const actual = parseArguments(argv);
 
-    assert.deepEqual(actual, expected);
+    expect(actual).toEqual(expected);
   });
 });

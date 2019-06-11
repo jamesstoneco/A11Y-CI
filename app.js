@@ -1,9 +1,10 @@
 const handleOutput = require("./helpers/handleOutput");
-const program = require("commander");
+const { Command } = require("commander");
 const runCrawler = require("./helpers/runCrawler");
 const { urlRegex } = require("./helpers/regexes");
 
 function parseArguments(argv) {
+  const program = new Command();
   program
     .version("0.1.0", "-v, --version")
     .option(
@@ -66,35 +67,19 @@ function parseArguments(argv) {
 
   if (!urlRegex.test(site)) throw new Error("Invalid URL provided");
 
-  const result = {
+  return {
     outputFilePath: output,
     site,
     outputFileName: filename,
     crawlerConfig: {
-      pageLimit: program.limit,
-      maxRetries: program.numRetries,
+      pageLimit: limit && parseInt(limit),
+      maxRetries: numRetries && parseInt(numRetries),
       ignoreFragmentLinks,
       ignoreExtensions,
       routeManifestPath: routeManifest,
       streaming
     }
   };
-
-  for (const key of [
-    "site",
-    "output",
-    "filename",
-    "limit",
-    "numRetries",
-    "ignoreFragmentLinks",
-    "ignoreExtensions",
-    "routeManifest",
-    "streaming"
-  ]) {
-    delete program[key];
-  }
-
-  return result;
 }
 
 async function runProgram() {
