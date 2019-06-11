@@ -1,5 +1,5 @@
 #!/usr/bin/env node
 
-const { runProgram } = require("./app.js");
+const { runProgram } = require("./src/app");
 
 runProgram();
