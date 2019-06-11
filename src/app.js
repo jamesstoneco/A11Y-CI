@@ -1,10 +1,9 @@
-const handleOutput = require("./helpers/handleOutput");
 const { Command } = require("commander");
-const runCrawler = require("./helpers/runCrawler");
 const { urlRegex } = require("./helpers/regexes");
+const handleOutput = require("./helpers/handleOutput");
+const runCrawler = require("./helpers/runCrawler");
 
-function parseArguments(argv) {
-  const program = new Command();
+function parseArguments(argv, program = new Command()) {
   program
     .version("0.1.0", "-v, --version")
     .option(
@@ -49,13 +48,13 @@ function parseArguments(argv) {
 
   const {
     site,
-    output,
-    filename,
-    limit,
-    numRetries,
+    output: outputFilePath,
+    filename: outputFileName,
+    limit: pageLimit,
+    numRetries: maxRetries,
     ignoreFragmentLinks,
     ignoreExtensions,
-    routeManifest,
+    routeManifest: routeManifestPath,
     streaming
   } = program;
 
@@ -65,18 +64,20 @@ function parseArguments(argv) {
     );
   }
 
-  if (!urlRegex.test(site)) throw new Error("Invalid URL provided");
+  if (!urlRegex.test(site)) {
+    throw new Error("Invalid URL provided");
+  }
 
   return {
-    outputFilePath: output,
+    outputFilePath,
     site,
-    outputFileName: filename,
+    outputFileName,
     crawlerConfig: {
-      pageLimit: limit && parseInt(limit),
-      maxRetries: numRetries && parseInt(numRetries),
+      pageLimit: parseInt(pageLimit),
+      maxRetries: parseInt(maxRetries),
       ignoreFragmentLinks,
       ignoreExtensions,
-      routeManifestPath: routeManifest,
+      routeManifestPath,
       streaming
     }
   };
@@ -90,10 +91,34 @@ async function runProgram() {
     outputFileName
   } = parseArguments(process.argv);
   const results = await runCrawler(site, crawlerConfig);
-
+  const violationsCount = results.violations.length;
   if (outputFilePath && outputFileName) {
     handleOutput(JSON.stringify(results), outputFilePath, outputFileName);
   }
+
+  if (violationsCount > 0) {
+    results.violations.forEach((error, index) => {
+      const { impact, description, tags: failedStandards } = error;
+      console.error(`
+Error #${index + 1}
+
+Error Description:
+${description}
+
+Impact:
+${impact}
+
+Failed standards:
+${failedStandards.join(",\n")}
+      `);
+    });
+
+    throw new Error(
+      `Found ${violationsCount} errors. Please see output above for more details.`
+    );
+  }
+
+  console.info("Well done, no violations found!");
 }
 
 module.exports = {

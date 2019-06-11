@@ -1,4 +1,4 @@
-const { parseArguments } = require("../app");
+const { parseArguments } = require("../src/app");
 const {
   program,
   allOptions,
@@ -8,7 +8,7 @@ const {
 jest.mock("accessible-pipeline", () => ({ runCore: jest.fn() }));
 
 describe("should parse options correctly", () => {
-  it("parses some options", () => {
+  it("parses all options correctly", () => {
     const argv = [...program, ...allOptions];
 
     const expected = {
