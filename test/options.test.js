@@ -1,4 +1,4 @@
-const { parseArguments } = require("../src/app");
+const parseArguments = require("../src/helpers/parseArguments");
 const {
   program,
   allOptions,
