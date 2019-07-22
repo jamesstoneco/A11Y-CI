@@ -1,12 +1,9 @@
 const handleOutput = require("./helpers/handleOutput");
-const parseArguments = require("./helpers/parseArguments");
+const parseCLIArguments = require("./helpers/parseCLIArguments");
 const runCrawler = require("./helpers/runCrawler");
-const ReportParsingService = require("./services/ReportParsingService");
+const log = require("./helpers/log");
+const parseReportResults = require("./helpers/parseReportResults");
 const chalk = require("chalk");
-function log(message) {
-  console.log(message);
-  console.log("");
-}
 
 async function runProgram() {
   const {
@@ -14,10 +11,9 @@ async function runProgram() {
     crawlerConfig,
     outputFilePath,
     outputFileName
-  } = parseArguments(process.argv);
+  } = parseCLIArguments(process.argv);
   const results = await runCrawler(site, crawlerConfig);
-  const reportParser = new ReportParsingService();
-  const parsedResults = reportParser.parse(results);
+  const parsedResults = parseReportResults(results);
   const pageCount = parsedResults.length;
   const violationsCount = parsedResults.reduce((accumulator, current) => {
     const { violations } = current;
@@ -75,32 +71,32 @@ async function runProgram() {
           log(
             `${chalk.yellow.bold(issueGrouping)} (${totalIssues} ${postFix})`
           );
-          if (minor.length) {
+          if (minorIssues) {
             log(chalk.green("Minor issues"));
+            minor.forEach(outputNodeResults);
           }
-          minor.forEach(outputNodeResults);
 
-          if (moderate.length) {
+          if (moderateIssues) {
             log(chalk.green("Moderate issues"));
+            moderate.forEach(outputNodeResults);
           }
-          moderate.forEach(outputNodeResults);
 
-          if (serious.length) {
+          if (seriousIssues) {
             log(chalk.green("Serious issues"));
+            serious.forEach(outputNodeResults);
           }
-          serious.forEach(outputNodeResults);
 
-          if (critical.length) {
+          if (criticalIssues) {
             log(chalk.green("Critical issues"));
+            critical.forEach(outputNodeResults);
           }
-          critical.forEach(outputNodeResults);
         }
       }
     });
 
     return log(
       chalk.red.bold(
-        `Found ${violationsCount} elements with errors over ${pageCount} pages, that is an average of ${Math.round(
+        `• Found ${violationsCount} elements with errors over ${pageCount} pages, that is an average of ${Math.round(
           violationsCount / pageCount
         )} per page.`
       )

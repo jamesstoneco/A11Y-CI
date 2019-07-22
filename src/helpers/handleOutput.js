@@ -4,7 +4,7 @@ const {
 } = require("fs");
 const mkdirp = require("mkdirp");
 
-module.exports = async function handleOutput(results, outputPath, fileName) {
+async function handleOutput(results, outputPath, fileName) {
   const currentWorkingDirectory = process.cwd().replace(/\/$/, "");
   const pathForOutputFile = outputPath.replace(/\/$/, "");
   try {
@@ -16,4 +16,6 @@ module.exports = async function handleOutput(results, outputPath, fileName) {
   } catch (e) {
     throw new Error(e);
   }
-};
+}
+
+module.exports = handleOutput;

@@ -1,4 +1,5 @@
 const { raw } = String;
+
 const urlRegex = new RegExp(
   raw`^https?:\/\/` + // protocol
   raw`((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|` + // domain name
@@ -9,4 +10,4 @@ const urlRegex = new RegExp(
   "i"
 );
 
-module.exports = { urlRegex };
+module.exports = urlRegex;

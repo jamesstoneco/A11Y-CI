@@ -1,5 +1,5 @@
 const { Command } = require("commander");
-const { urlRegex } = require("./regexes");
+const urlRegex = require("./urlRegex");
 
 module.exports = function parseArguments(argv, program = new Command()) {
   program
