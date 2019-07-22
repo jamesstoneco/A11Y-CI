@@ -1,3 +1,4 @@
 #!/usr/bin/env node
 
-require("./src/app")();
+const runApp = require("./src/app");
+runApp().catch(console.error);
