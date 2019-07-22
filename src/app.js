@@ -3,6 +3,10 @@ const parseArguments = require("./helpers/parseArguments");
 const runCrawler = require("./helpers/runCrawler");
 const ReportParsingService = require("./services/ReportParsingService");
 const chalk = require("chalk");
+function log(message) {
+  console.log(message);
+  console.log("");
+}
 
 async function runProgram() {
   const {
@@ -14,6 +18,7 @@ async function runProgram() {
   const results = await runCrawler(site, crawlerConfig);
   const reportParser = new ReportParsingService();
   const parsedResults = reportParser.parse(results);
+  const pageCount = parsedResults.length;
   const violationsCount = parsedResults.reduce((accumulator, current) => {
     const { violations } = current;
     const nodeCount = violations.reduce((accumulator, current) => {
@@ -44,7 +49,7 @@ async function runProgram() {
 
       for (const url in urlsWithIssues) {
         const issues = urlsWithIssues[url];
-        console.log(chalk.magenta.bold(url));
+        log(chalk.magenta.bold(url));
         for (const issueGrouping in issues) {
           const {
             minor = [],
@@ -61,57 +66,48 @@ async function runProgram() {
           const postFix = totalIssues === 1 ? "issue" : "issues";
 
           function outputNodeResults(issueNode, index) {
-            console.log("");
-            console.log(chalk.blue.bold(`Selector with issue #${index + 1}`));
-            console.log(issueNode.target[0]);
-            console.log("");
-            console.log(chalk.blue.bold(`Summary of issue #${index + 1}`));
-            console.log(issueNode.failureSummary);
+            log(chalk.blue.bold(`Selector with issue #${index + 1}`));
+            log(issueNode.target[0]);
+            log(chalk.blue.bold(`Summary of issue #${index + 1}`));
+            log(issueNode.failureSummary);
           }
 
-          console.log("");
-          console.log(
+          log(
             `${chalk.yellow.bold(issueGrouping)} (${totalIssues} ${postFix})`
           );
           if (minor.length) {
-            console.log("");
-            console.log(chalk.green("Minor issues"));
+            log(chalk.green("Minor issues"));
           }
           minor.forEach(outputNodeResults);
 
           if (moderate.length) {
-            console.log("");
-            console.log(chalk.green("Moderate issues"));
+            log(chalk.green("Moderate issues"));
           }
           moderate.forEach(outputNodeResults);
 
           if (serious.length) {
-            console.log("");
-            console.log(chalk.green("Serious issues"));
+            log(chalk.green("Serious issues"));
           }
           serious.forEach(outputNodeResults);
 
           if (critical.length) {
-            console.log("");
-            console.log(chalk.green("Critical issues"));
+            log(chalk.green("Critical issues"));
           }
           critical.forEach(outputNodeResults);
         }
       }
     });
 
-    console.log("");
-    console.log(
+    return log(
       chalk.red.bold(
-        `Found ${violationsCount} elements with errors on the page.`
+        `Found ${violationsCount} elements with errors over ${pageCount} pages, that is an average of ${Math.round(
+          violationsCount / pageCount
+        )} per page.`
       )
     );
-    console.log("");
-
-    return;
   }
 
-  console.log(chalk.green.bold("• Well done, no violations found!"));
+  log(chalk.green.bold("• Well done, no violations found!"));
 }
 
 module.exports = runProgram;
