@@ -35,15 +35,13 @@ async function runProgram() {
   log(chalk.red.bold(`Threshold: ${errorAverageThreshold}`));
 
   if (averageErrors > errorAverageThreshold) {
+    process.exitCode = 1;
     log(chalk.red.bold(`Difference: ${averageErrors - errorAverageThreshold}`));
-    log(
+    return log(
       chalk.red.bold(
         `CI Failed. Reason: Error average went above the threshold.`
       )
     );
-
-    process.exitCode = 1;
-    return;
   }
 
   return log(
