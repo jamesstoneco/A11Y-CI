@@ -42,6 +42,11 @@ module.exports = function parseArguments(argv, program = new Command()) {
       `Whether to expose the streaming logging API, used for advanced, "live" reporters`
     )
     .option("-s, --site <url>", "The base URL of the site to crawl")
+    .option(
+      "-t, --errorAverageThreshold <number>",
+      "If the average errors per page (error_count / page_count) go over the threshold, the pipeline will fail",
+      5
+    )
     .parse(argv);
 
   const {
@@ -53,7 +58,8 @@ module.exports = function parseArguments(argv, program = new Command()) {
     ignoreFragmentLinks,
     ignoreExtensions,
     routeManifest: routeManifestPath,
-    streaming
+    streaming,
+    errorAverageThreshold
   } = program;
 
   if (!site) {
@@ -72,6 +78,7 @@ module.exports = function parseArguments(argv, program = new Command()) {
     outputFilePath,
     site,
     outputFileName,
+    errorAverageThreshold,
     crawlerConfig: {
       pageLimit: parseInt(pageLimit),
       maxRetries: parseInt(maxRetries),
