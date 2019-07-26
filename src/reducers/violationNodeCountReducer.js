@@ -5,8 +5,8 @@ function countViolationNodes(violations) {
   }, 0);
 }
 
-function getViolationNodesCount(results) {
-  return results.reduce((accumulator, current) => {
+function getViolationNodesCount(parsedResults) {
+  return parsedResults.reduce((accumulator, current) => {
     const { violations } = current;
     const nodeCount = countViolationNodes(violations, 0);
     return accumulator + nodeCount;
