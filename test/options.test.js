@@ -1,4 +1,4 @@
-const { parseArguments } = require("../src/app");
+const parseArguments = require("../src/helpers/parseCLIArguments");
 const {
   program,
   allOptions,
@@ -15,6 +15,7 @@ describe("should parse options correctly", () => {
       site: "https://foo.bar",
       outputFilePath: "test/",
       outputFileName: "res.json",
+      errorAverageThreshold: 5,
       crawlerConfig: {
         ignoreExtensions: ["foo", "bar"],
         streaming: true,
@@ -37,6 +38,7 @@ describe("should parse options correctly", () => {
       site: "https://foo.bar",
       outputFilePath: "results/",
       outputFileName: "report.json",
+      errorAverageThreshold: 5,
       crawlerConfig: {
         pageLimit: 1000000,
         maxRetries: 5,
