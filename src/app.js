@@ -3,7 +3,15 @@ const parseCLIArguments = require("./helpers/parseCLIArguments");
 const runCrawler = require("./helpers/runCrawler");
 const log = require("./helpers/log");
 const parseReportResults = require("./helpers/parseReportResults");
+const translateIssueGrouping = require("./helpers/translateIssueGrouping");
 const chalk = require("chalk");
+
+function outputNodeResults(issueNode, index) {
+  log(chalk.blue.bold(`Selector with issue #${index + 1}`));
+  log(issueNode.target[0]);
+  log(chalk.blue.bold(`Summary of issue #${index + 1}`));
+  log(issueNode.failureSummary);
+}
 
 async function runProgram() {
   const {
@@ -60,17 +68,9 @@ async function runProgram() {
           const totalIssues =
             minorIssues + moderateIssues + seriousIssues + criticalIssues;
           const postFix = totalIssues === 1 ? "issue" : "issues";
+          const groupTitle = translateIssueGrouping(issueGrouping);
 
-          function outputNodeResults(issueNode, index) {
-            log(chalk.blue.bold(`Selector with issue #${index + 1}`));
-            log(issueNode.target[0]);
-            log(chalk.blue.bold(`Summary of issue #${index + 1}`));
-            log(issueNode.failureSummary);
-          }
-
-          log(
-            `${chalk.yellow.bold(issueGrouping)} (${totalIssues} ${postFix})`
-          );
+          log(`${chalk.yellow.bold(groupTitle)} (${totalIssues} ${postFix})`);
           if (minorIssues) {
             log(chalk.green("Minor issues"));
             minor.forEach(outputNodeResults);
