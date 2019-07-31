@@ -1,5 +1,7 @@
 const { Command } = require("commander");
-const urlRegex = require("./urlRegex");
+const log = require("./log");
+const chalk = require("chalk");
+const isUrl = require("./isUrl");
 
 module.exports = function parseArguments(argv, program = new Command()) {
   program
@@ -70,7 +72,7 @@ module.exports = function parseArguments(argv, program = new Command()) {
     );
   }
 
-  if (!urlRegex.test(site)) {
+  if (!isUrl(site)) {
     log(chalk.red.bold("Invalid URL provided"));
   }
 

@@ -1,8 +1,8 @@
 const { runCore: crawler } = require("accessible-pipeline");
-const urlRegex = require("./urlRegex");
+const isUrl = require("./isUrl");
 
 async function runCrawler(site, crawlerConfig) {
-  if (!urlRegex.test(site)) {
+  if (!isUrl(site)) {
     throw new Error("Malformed url");
   }
 
