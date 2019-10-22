@@ -1,4 +1,4 @@
-const parseArguments = require("../src/helpers/parseCLIArguments");
+const { parseCLIArguments } = require("../src/helpers/parseCLIArguments");
 const {
   program,
   allOptions,
@@ -26,7 +26,7 @@ describe("should parse options correctly", () => {
       }
     };
 
-    const actual = parseArguments(argv);
+    const actual = parseCLIArguments(argv);
 
     expect(actual).toEqual(expected);
   });
@@ -49,7 +49,7 @@ describe("should parse options correctly", () => {
       }
     };
 
-    const actual = parseArguments(argv);
+    const actual = parseCLIArguments(argv);
 
     expect(actual).toEqual(expected);
   });

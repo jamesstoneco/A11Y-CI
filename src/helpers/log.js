@@ -3,4 +3,4 @@ function log(message) {
   console.log("");
 }
 
-module.exports = log;
+module.exports = { log };

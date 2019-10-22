@@ -1,10 +1,14 @@
-const handleOutput = require("./helpers/handleOutput");
-const parseCLIArguments = require("./helpers/parseCLIArguments");
-const runCrawler = require("./helpers/runCrawler");
-const log = require("./helpers/log");
-const parseReportResults = require("./helpers/parseReportResults");
-const outputViolationInformation = require("./helpers/outputViolationInformation");
-const getViolationNodesCount = require("./reducers/violationNodeCountReducer");
+const { handleOutput } = require("./helpers/handleOutput");
+const { parseCLIArguments } = require("./helpers/parseCLIArguments");
+const { runCrawler } = require("./helpers/runCrawler");
+const { log } = require("./helpers/log");
+const { reportParser } = require("./helpers/parseReportResults");
+const {
+  outputViolationInformation
+} = require("./helpers/outputViolationInformation");
+const {
+  getViolationNodesCount
+} = require("./reducers/violationNodeCountReducer");
 const chalk = require("chalk");
 
 async function runProgram() {
@@ -16,7 +20,7 @@ async function runProgram() {
     errorAverageThreshold
   } = parseCLIArguments(process.argv);
   const results = await runCrawler(site, crawlerConfig);
-  const parsedResults = parseReportResults(results);
+  const parsedResults = reportParser(results);
   const violationsCount = getViolationNodesCount(parsedResults);
   const pageCount = parsedResults.length;
   const averageErrors = violationsCount / pageCount;
@@ -51,4 +55,4 @@ async function runProgram() {
   );
 }
 
-module.exports = runProgram;
+module.exports = { runProgram };

@@ -1,8 +1,8 @@
 const { runCore: crawler } = require("accessible-pipeline");
-const isUrl = require("./isUrl");
+const { isURL } = require("./isURL");
 
 async function runCrawler(site, crawlerConfig) {
-  if (!isUrl(site)) {
+  if (!isURL(site)) {
     throw new Error("Malformed url");
   }
 
@@ -11,4 +11,4 @@ async function runCrawler(site, crawlerConfig) {
   return results;
 }
 
-module.exports = runCrawler;
+module.exports = { runCrawler };

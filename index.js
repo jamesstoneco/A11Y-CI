@@ -1,4 +1,4 @@
 #!/usr/bin/env node
 
-const runApp = require("./src/app");
-runApp().catch(console.error);
+const { runProgram } = require("./src/app");
+runProgram().catch(console.error);

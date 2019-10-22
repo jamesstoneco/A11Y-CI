@@ -12,4 +12,4 @@ function violationTreeMapReducer(violations, url, init = {}) {
   }, init);
 }
 
-module.exports = violationTreeMapReducer;
+module.exports = { violationTreeMapReducer };

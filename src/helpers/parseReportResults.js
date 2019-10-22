@@ -24,4 +24,4 @@ function reportParser(inputData) {
   return getViolations(normalisedData);
 }
 
-module.exports = reportParser;
+module.exports = { reportParser };

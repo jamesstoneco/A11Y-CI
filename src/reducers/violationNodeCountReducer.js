@@ -13,4 +13,4 @@ function getViolationNodesCount(parsedResults) {
   }, 0);
 }
 
-module.exports = getViolationNodesCount;
+module.exports = { getViolationNodesCount };

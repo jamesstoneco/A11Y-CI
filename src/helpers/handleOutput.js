@@ -18,4 +18,4 @@ async function handleOutput(results, outputPath, fileName) {
   }
 }
 
-module.exports = handleOutput;
+module.exports = { handleOutput };

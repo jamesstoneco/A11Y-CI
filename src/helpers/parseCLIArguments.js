@@ -1,9 +1,9 @@
-const { Command } = require("commander");
-const log = require("./log");
 const chalk = require("chalk");
-const isUrl = require("./isUrl");
+const { Command } = require("commander");
+const { log } = require("./log");
+const { isURL } = require("./isURL");
 
-module.exports = function parseArguments(argv, program = new Command()) {
+function parseCLIArguments(argv, program = new Command()) {
   program
     .version("0.1.0", "-v, --version")
     .option(
@@ -72,7 +72,7 @@ module.exports = function parseArguments(argv, program = new Command()) {
     );
   }
 
-  if (!isUrl(site)) {
+  if (!isURL(site)) {
     log(chalk.red.bold("Invalid URL provided"));
   }
 
@@ -90,4 +90,5 @@ module.exports = function parseArguments(argv, program = new Command()) {
       streaming
     }
   };
-};
+}
+module.exports = { parseCLIArguments };

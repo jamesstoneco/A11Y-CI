@@ -1,7 +1,9 @@
 const chalk = require("chalk");
-const log = require("./log");
-const translateIssueGrouping = require("./translateIssueGrouping");
-const reduceToMappedViolationTree = require("../reducers/violationTreeMapReducer");
+const { log } = require("./log");
+const { translateIssueGrouping } = require("./translateIssueGrouping");
+const {
+  violationTreeMapReducer
+} = require("../reducers/violationTreeMapReducer");
 
 function outputNodeResults(issueNode, index) {
   log(chalk.blue.bold(`Issue #${index + 1}`));
@@ -14,7 +16,7 @@ function outputNodeResults(issueNode, index) {
 function outputViolationInformation(parsedResults) {
   parsedResults.forEach((failureGroup, index) => {
     const { violations, url } = failureGroup;
-    const urlsWithIssues = reduceToMappedViolationTree(violations, url, {});
+    const urlsWithIssues = violationTreeMapReducer(violations, url, {});
 
     for (const url in urlsWithIssues) {
       const issues = urlsWithIssues[url];
@@ -60,4 +62,4 @@ function outputViolationInformation(parsedResults) {
   });
 }
 
-module.exports = outputViolationInformation;
+module.exports = { outputViolationInformation };
