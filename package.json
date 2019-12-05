@@ -21,7 +21,7 @@
   "dependencies": {
     "accessible-pipeline": "^0.6.0",
     "chalk": "^3.0.0",
-    "commander": "^2.20.0"
+    "commander": "^4.0.1"
   },
   "devDependencies": {
     "husky": "^2.3.0",
