@@ -1,58 +1,52 @@
-const { handleOutput } = require("./helpers/handleOutput");
-const { parseCLIArguments } = require("./helpers/parseCLIArguments");
-const { runCrawler } = require("./helpers/runCrawler");
-const { log } = require("./helpers/log");
-const { reportParser } = require("./helpers/parseReportResults");
-const {
-  outputViolationInformation
-} = require("./helpers/outputViolationInformation");
-const {
-  getViolationNodesCount
-} = require("./reducers/violationNodeCountReducer");
-const chalk = require("chalk");
+const { runCore: crawler } = require("accessible-pipeline");
+const { args, help } = require("./helpers/parse-args");
+const { getViolations } = require("./helpers/parse-report-results");
+const { getViolationNodesCount } = require("./helpers/count-violation-nodes");
+const { writeReportFile } = require("./helpers/write-report");
+const { displayResults } = require("./helpers/display-results");
 
+/**
+ * @function runProgram
+ * @description entry point to running the CLI
+ * @returns {void} Nothing since everything is output via logs or errors
+ */
 async function runProgram() {
-  const {
-    site,
-    crawlerConfig,
-    outputFilePath,
-    outputFileName,
-    errorAverageThreshold
-  } = parseCLIArguments(process.argv);
-  const results = await runCrawler(site, crawlerConfig);
-  const parsedResults = reportParser(results);
-  const violationsCount = getViolationNodesCount(parsedResults);
-  const pageCount = parsedResults.length;
-  const averageErrors = violationsCount / pageCount;
-
-  if (outputFilePath && outputFileName) {
-    handleOutput(JSON.stringify(parsedResults), outputFilePath, outputFileName);
+  if (args.help === true) {
+    return console.log(help);
   }
+
+  const { results } = await crawler(args.site, args);
+  const violations = getViolations(results);
+  const violationsCount = getViolationNodesCount(violations);
+  const pageCount = violations.length;
+  const averageErrors = Math.round((violationsCount / pageCount) * 100) / 100;
+
+  await writeReportFile(violations, args.outputDirectory, args.outputFileName);
 
   if (violationsCount === 0) {
-    return log(chalk.green.bold("Well done, no violations found!"));
+    return console.log("Well done, no violations found!");
   }
 
-  outputViolationInformation(parsedResults);
-  log(chalk.red.bold(`Total accessibility issues: ${violationsCount}`));
-  log(chalk.red.bold(`Average errors: ${averageErrors}`));
-  log(chalk.red.bold(`Threshold: ${errorAverageThreshold}`));
+  if (args.displayResults === true) {
+    displayResults(violations);
+  }
 
-  if (averageErrors > errorAverageThreshold) {
+  console.log(`Total accessibility issues: ${violationsCount}`);
+  console.log(`Average errors: ${averageErrors}`);
+  console.log(`Threshold: ${args.errorAverageThreshold}`);
+
+  if (averageErrors > args.errorAverageThreshold) {
+    console.error(
+      `CI Failed: Average errors of ${averageErrors} were above the defined threshold of ${args.errorAverageThreshold}`
+    );
     process.exitCode = 1;
-    log(chalk.red.bold(`Difference: ${averageErrors - errorAverageThreshold}`));
-    return log(
-      chalk.red.bold(
-        `CI Failed. Reason: Error average went above the threshold.`
-      )
+  } else {
+    console.log(
+      `CI run complete but ${violationsCount} ${
+        violations === 1 ? "issue" : "issues"
+      } require review.`
     );
   }
-
-  return log(
-    chalk.red.bold(
-      `CI run complete but ${violationsCount} issues require review.`
-    )
-  );
 }
 
 module.exports = { runProgram };
